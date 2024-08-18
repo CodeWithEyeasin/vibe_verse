@@ -24,7 +24,7 @@ class LandingScreen extends StatelessWidget {
 
               // Staggered Text Animation for the Title
               Text(
-                'SociaLive',
+                'Vibe Verse',
                 style: GoogleFonts.lobster(
                   textStyle: Theme.of(context).textTheme.displayLarge,
                   fontSize: 48.sp,

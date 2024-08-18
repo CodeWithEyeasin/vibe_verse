@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Center(
           child: Text(
-            'SociaLive',
+            'Vibe Verse',
             style: GoogleFonts.lobster(
               textStyle: Theme.of(context).textTheme.displayLarge,
               fontSize: 48,

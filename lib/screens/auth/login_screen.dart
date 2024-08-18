@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SizedBox(height: ScreenUtil.defaultSize.height * .15.h),
               Text(
-                'SociaLive',
+                'Vibe Verse',
                 style: GoogleFonts.lobster(
                   textStyle: textTheme.displayLarge,
                   fontSize: 48,

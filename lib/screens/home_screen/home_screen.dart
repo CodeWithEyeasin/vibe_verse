@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: AppColors.white,
         elevation: 0,
         title: Text(
-          'SociaLive',
+          'Vibe Verse',
           style: GoogleFonts.lobster(
             fontSize: 35,
             fontWeight: FontWeight.w700,
