@@ -153,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: [
               SizedBox(height: ScreenUtil.defaultSize.height * .025.h),
               Text(
-                'Vibe Verse',
+                'SociaLive',
                 style: GoogleFonts.lobster(
                   textStyle: Theme.of(context).textTheme.displayLarge,
                   fontSize: 48,
