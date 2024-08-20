@@ -14,22 +14,22 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   File? _selectedImage;
 
-  Future _pickImageFromGallery() async {
-    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (returnedImage == null) return;
-
-    setState(() {
-      _selectedImage = File(returnedImage.path);
-    });
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
   }
 
-  Future _pickImageFromCamera() async {
-    final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-    if (returnedImage == null) return;
-
-    setState(() {
-      _selectedImage = File(returnedImage.path);
-    });
+  void _onNextPressed() {
+    if (_selectedImage != null) {
+      // Add your navigation logic here
+      // Navigator.of(context).push(MaterialPageRoute(
+      //   builder: (context) => AddPostTextScreen(_selectedImage!),
+      // ));
+    }
   }
 
   @override
@@ -49,14 +49,13 @@ class _UploadScreenState extends State<UploadScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: GestureDetector(
-                onTap: () {
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //   builder: (context) => AddPostTextScreen(_file!),
-                  // ));
-                },
-                child: Text(
-                  'Next',
-                  style: TextStyle(fontSize: 15.sp, color: AppColors.secondary),
+                onTap: _onNextPressed,
+                child: InkWell(
+                  onTap: _onNextPressed,
+                  child: Text(
+                    'Next',
+                    style: TextStyle(fontSize: 15.sp, color: AppColors.secondary),
+                  ),
                 ),
               ),
             ),
@@ -66,54 +65,63 @@ class _UploadScreenState extends State<UploadScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _selectedImage != null
-              ? Container(
-            height: 300.h,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              image: DecorationImage(
-                image: FileImage(_selectedImage!),
-                fit: BoxFit.cover,
-              ),
-            ),
-          )
-              : Container(
-            height: 300.h,
-            width: double.infinity,
-            color: AppColors.primary,
-            child: const Center(
-              child: Text('Please select an Image'),
-            ),
-          ),
+          const Spacer(),
+          _buildImagePreview(),
           SizedBox(height: 10.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {
-                  _pickImageFromGallery();
-                },
-                icon: const Icon(Icons.image, size: 120),
-              ),
-              IconButton(
-                onPressed: () {
-                  _pickImageFromCamera();
-                },
-                icon: const Icon(Icons.camera_alt_rounded, size: 120),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Images'),
-              SizedBox(width: 65.h),
-              const Text('Camera'),
-            ],
-          ),
+          _buildImagePickerOptions(),
+          const Spacer(),
         ],
       ),
+    );
+  }
+
+  Widget _buildImagePreview() {
+    return Container(
+      height: 300.h,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        image: _selectedImage != null
+            ? DecorationImage(
+          image: FileImage(_selectedImage!),
+          fit: BoxFit.cover,
+        )
+            : null,
+      ),
+      child: _selectedImage == null
+          ? const Center(
+        child: Text('Please select an Image'),
+      )
+          : null,
+    );
+  }
+
+  Widget _buildImagePickerOptions() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildPickerButton(Icons.image, () => _pickImage(ImageSource.gallery)),
+            _buildPickerButton(Icons.camera_alt_rounded, () => _pickImage(ImageSource.camera)),
+          ],
+        ),
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Images'),
+            SizedBox(width: 65),
+            Text('Camera'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPickerButton(IconData icon, VoidCallback onPressed) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 120),
     );
   }
 }
