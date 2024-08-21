@@ -37,20 +37,50 @@ class _AddPostTextScreenState extends State<AddPostTextScreen> {
               padding:  EdgeInsets.symmetric(horizontal:10.w ),
               child: GestureDetector(
                 onTap: () async {
+                  if (widget._file == null) {
+                    // Handle the case where the file is null
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('No image selected. Please select an image first.'),
+                    ));
+                    return; // Exit the function early
+                  }
+
                   setState(() {
                     islooding = true;
                   });
-                  String post_url = await StorageMethod()
-                      .uploadImageToStorage('post', widget._file);
-                  await FirebaseFireStore().createPost(
-                      postImage: post_url,
+
+                  try {
+                    // Upload image to storage and get the URL
+                    String? postUrl = await StorageMethod().uploadImageToStorage('post', widget._file);
+
+                    // Check if postUrl is null
+                    if (postUrl == null) {
+                      throw Exception("Failed to upload image. URL is null.");
+                    }
+
+                    // Create the post in Firestore
+                    await FirebaseFireStore().createPost(
+                      postImage: postUrl,
                       caption: caption.text,
-                      location: location.text);
-                  setState(() {
-                    islooding = false;
-                  });
-                  Navigator.of(context).pop();
+                      location: location.text,
+                    );
+
+                    // If everything is successful, pop the page
+                    Navigator.of(context).pop();
+                  } catch (e) {
+                    // If there's an error, log it and show a message
+                    print("Error: $e");
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Failed to post. Please try again.'),
+                    ));
+                  } finally {
+                    // Ensure loading is set to false regardless of success or failure
+                    setState(() {
+                      islooding = false;
+                    });
+                  }
                 },
+
                 child: Text('Share',style: TextStyle(
                   color: AppColors.secondary,
                   fontSize: 15.sp,
