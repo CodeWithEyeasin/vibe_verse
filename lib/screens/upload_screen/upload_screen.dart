@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vibe_verse/utils/app_colors.dart';
 
+import 'addpost_text_screen.dart';
+
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
 
@@ -26,9 +28,9 @@ class _UploadScreenState extends State<UploadScreen> {
   void _onNextPressed() {
     if (_selectedImage != null) {
       // Add your navigation logic here
-      // Navigator.of(context).push(MaterialPageRoute(
-      //   builder: (context) => AddPostTextScreen(_selectedImage!),
-      // ));
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => AddPostTextScreen(_selectedImage!),
+      ));
     }
   }
 
@@ -110,7 +112,7 @@ class _UploadScreenState extends State<UploadScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Images'),
-            SizedBox(width: 65),
+            SizedBox(width: 75),
             Text('Camera'),
           ],
         ),
