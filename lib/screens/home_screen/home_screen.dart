@@ -1,14 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:vibe_verse/data/firebase_auth.dart';
+import 'package:vibe_verse/data/firebase_firestore.dart';
 import 'package:vibe_verse/screens/auth/splash_screen.dart';
 import 'package:vibe_verse/utils/app_colors.dart';
 import 'package:vibe_verse/widget/post_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
+   FirebaseFirestore _firebaseFireStore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +70,22 @@ class HomeScreen extends StatelessWidget {
         // ),
         child: CustomScrollView(
           slivers: [
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index){
-                return PostWidget();
-              },
-                childCount: 5,
-              ),
-            ),
+            StreamBuilder(
+              stream: _firebaseFireStore
+                  .collection('posts')
+                  .orderBy('time', descending: true).snapshots(),
+              builder: (context, snapshot) {
+               return SliverList(
+                delegate: SliverChildBuilderDelegate((context, index){
+                  if(!snapshot.hasData){
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  return PostWidget(snapshort: snapshot.data!.docs[index].data(),);
+                },
+                  childCount: snapshot.data == null?0:snapshot.data!.docs.length,
+                ),
+              );
+            }, ),
           ],
         ),
       ),

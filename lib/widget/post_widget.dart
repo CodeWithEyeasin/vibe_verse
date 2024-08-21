@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:vibe_verse/utils/image_cached.dart';
 import '../utils/app_colors.dart';
 
 class PostWidget extends StatelessWidget {
-  const PostWidget({super.key});
+  const PostWidget({super.key, this.snapshort});
+
+  final snapshort;
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +22,13 @@ class PostWidget extends StatelessWidget {
                 child: SizedBox(
                   width: 35.w,
                   height: 35.h,
-                  child: const Icon(Icons.person_2_outlined),
+                  child: CachedImage(snapshort['profileImage']),
                 ),
               ),
-              title: Text('Name',style: TextStyle(
+              title: Text(snapshort['username'],style: TextStyle(
                 fontSize: 13.sp,
               ),),
-              subtitle: Text('username',style: TextStyle(
+              subtitle: Text(snapshort['location'],style: TextStyle(
                 fontSize: 11.sp,
               ),),
               trailing: const Icon(Icons.more_horiz),
@@ -35,9 +38,7 @@ class PostWidget extends StatelessWidget {
         Container(
           width: 375.w,
           height: 375.h,
-          child: Image.asset('assets/images/post.jpg',
-            fit: BoxFit.cover,
-          ),
+          child: CachedImage(snapshort['postImage'])
         ),
         Container(
           width: 375.w,
@@ -54,7 +55,7 @@ class PostWidget extends StatelessWidget {
                   SizedBox(width: 17.w),
                   Icon(Icons.comment_bank_outlined,size: 25.h,),
                   SizedBox(width: 10.w),
-                  Text('20 Comments',style: TextStyle(fontSize: 15.h)),
+                  Text(snapshort['like'].length.toString(),style: TextStyle(fontSize: 15.h)),
                   const Spacer(),
                   Padding(
                     padding:  EdgeInsets.only(right: 10.w),
