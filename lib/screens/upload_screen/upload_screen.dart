@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:vibe_verse/utils/app_colors.dart';
-
-import 'addpost_text_screen.dart';
+import 'package:uuid/uuid.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -25,12 +25,32 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  void _onNextPressed() {
-    if (_selectedImage != null) {
-      // Add your navigation logic here
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AddPostTextScreen(_selectedImage!),
-      ));
+  Future<String> _uploadImageToStorage(File imageFile) async {
+    String fileName = const Uuid().v4();
+    Reference storageReference = FirebaseStorage.instance.ref().child('posts/$fileName');
+    UploadTask uploadTask = storageReference.putFile(imageFile);
+    TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
+  }
+
+  void _onNextPressed() async {
+    if (_selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an image first')),
+      );
+      return;
+    }
+
+    try {
+      String imageUrl = await _uploadImageToStorage(_selectedImage!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image uploaded successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload image: $e')),
+      );
     }
   }
 
@@ -55,7 +75,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 child: InkWell(
                   onTap: _onNextPressed,
                   child: Text(
-                    'Next',
+                    'Share',
                     style: TextStyle(fontSize: 15.sp, color: AppColors.secondary),
                   ),
                 ),

@@ -33,7 +33,7 @@ class FirebaseFireStore {
       return Usermodel(
           snapuser['bio'],
           snapuser['email'],
-          snapuser['follower'],
+          snapuser['followers'],
           snapuser['following'],
           snapuser['profile'],
           snapuser['username']);
