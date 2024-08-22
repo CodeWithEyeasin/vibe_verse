@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:vibe_verse/data/model/usermodel.dart';
 
@@ -62,4 +63,30 @@ class FirebaseFireStore {
     });
     return true;
   }
+  // Future<List<String>> fetchAllImages() async {
+  //   List<String> imageUrls = [];
+  //   final ListResult result = await FirebaseStorage.instance.ref('posts').listAll();
+  //
+  //   for (var ref in result.items) {
+  //     final String url = await ref.getDownloadURL();
+  //     imageUrls.add(url);
+  //   }
+  //   return imageUrls;
+  // }
+  Stream<List<String>> fetchImagesStream() async* {
+    while (true) {
+      List<String> imageUrls = [];
+      final ListResult result = await FirebaseStorage.instance.ref('posts').listAll();
+
+      for (var ref in result.items) {
+        final String url = await ref.getDownloadURL();
+        imageUrls.add(url);
+      }
+
+      yield imageUrls;
+      await Future.delayed(const Duration(seconds: 5)); // Poll every 5 seconds
+    }
+  }
+
 }
+
