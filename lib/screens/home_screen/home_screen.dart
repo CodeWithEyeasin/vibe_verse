@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:vibe_verse/data/firebase_auth.dart';
-import 'package:vibe_verse/screens/auth/splash_screen.dart';
 import 'package:vibe_verse/utils/app_colors.dart';
-import 'package:vibe_verse/widget/post_widget.dart';
+import '../../data/firebase_firestore.dart';
+import '../../widget/image_list_view.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -21,51 +25,34 @@ class HomeScreen extends StatelessWidget {
         title: Text(
           'Vibe Verse',
           style: GoogleFonts.lobster(
-            fontSize: 35,
+            fontSize: 35.sp,
             fontWeight: FontWeight.w700,
             fontStyle: FontStyle.italic,
           ),
         ),
         leading: CircleAvatar(
-        radius: 10.r,
+          radius: 10.r,
           backgroundColor: AppColors.white,
-          child: Icon(Icons.person,color: AppColors.secondary,size: 20.h,),
+          child: Icon(Icons.person, color: AppColors.secondary, size: 20.h),
         ),
         actions: [
-          IconButton(onPressed: (){}, icon: const Icon(Icons.notifications_none),),
-          IconButton(onPressed: (){}, icon: const Icon(Icons.message))
-
+          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_none)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.message)),
         ],
       ),
-      body: SafeArea(
-        // Center(
-        //   child: Text('Home'),
-        //   // InkWell(
-        //   //     onTap: () async {
-        //   //       //logout logic
-        //   //       //don't change it
-        //   //
-        //   //       await Authentication().signOutUser();
-        //   //       PersistentNavBarNavigator.pushNewScreen(
-        //   //         context,
-        //   //         screen: const SplashScreen(),
-        //   //         withNavBar: false,
-        //   //         pageTransitionAnimation: PageTransitionAnimation.cupertino,
-        //   //       );
-        //   //     },
-        //   //     child: const Text('Home')),
-        // ),
-        child: CustomScrollView(
-          slivers: [
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index){
-                return PostWidget();
-              },
-                childCount: 5,
-              ),
-            ),
-          ],
-        ),
+      body: StreamBuilder<List<String>>(
+        stream: FirebaseFireStore().fetchImagesStream(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No images found.'));
+          } else {
+            return ImageListView(imageUrls: snapshot.data!);
+          }
+        },
       ),
     );
   }

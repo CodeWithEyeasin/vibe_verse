@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +8,6 @@ import 'package:vibe_verse/screens/auth/login_screen.dart';
 import 'package:vibe_verse/utils/app_colors.dart';
 import 'package:vibe_verse/utils/dialog.dart';
 import 'package:vibe_verse/utils/image_picker.dart';
-
 import '../../widget/custom_button.dart';
 import '../../widget/custom_text_field.dart';
 

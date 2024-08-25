@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
+import 'package:vibe_verse/data/model/usermodel.dart';
 
 class FirebaseFireStore {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
@@ -22,4 +25,68 @@ class FirebaseFireStore {
 
     return true;
   }
+
+  Future<Usermodel>getUser()async{
+    try{
+      final user = await _fireStore.collection('users').doc(
+          _auth.currentUser!.uid).get();
+      final snapuser = user.data()!;
+      return Usermodel(
+          snapuser['bio'],
+          snapuser['email'],
+          snapuser['followers'],
+          snapuser['following'],
+          snapuser['profile'],
+          snapuser['username']);
+    } on FirebaseException catch (e) {
+      throw Exception(e.message.toString());
+    }
+  }
+  Future<bool> createPost({
+    required String postImage,
+    required String caption,
+    required String location,
+})async{
+    var uid = Uuid().v4();
+    DateTime data = new DateTime.now();
+    Usermodel user = await getUser();
+    await _fireStore.collection('posts').doc(uid).set({
+      'postImage':postImage,
+      'username':user.userName,
+      'profileImage':user.profile,
+      'caption':caption,
+      'location': location,
+      'uid':_auth.currentUser!.uid,
+      'postId': uid,
+      'like':[],
+      'time':data
+    });
+    return true;
+  }
+  // Future<List<String>> fetchAllImages() async {
+  //   List<String> imageUrls = [];
+  //   final ListResult result = await FirebaseStorage.instance.ref('posts').listAll();
+  //
+  //   for (var ref in result.items) {
+  //     final String url = await ref.getDownloadURL();
+  //     imageUrls.add(url);
+  //   }
+  //   return imageUrls;
+  // }
+  Stream<List<String>> fetchImagesStream() async* {
+    while (true) {
+      List<String> imageUrls = [];
+      final ListResult result = await FirebaseStorage.instance.ref('posts').listAll();
+
+      for (var ref in result.items) {
+        final String url = await ref.getDownloadURL();
+        imageUrls.add(url);
+      }
+
+      yield imageUrls;
+      await Future.delayed(const Duration(seconds: 5)); // Poll every 5 seconds
+    }
+  }
+
 }
+
