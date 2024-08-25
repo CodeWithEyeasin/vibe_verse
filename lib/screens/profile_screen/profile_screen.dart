@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../../utils/app_colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import '../../data/firebase_auth.dart';
+import '../auth/splash_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,12 +18,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var textTheme = theme.textTheme;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          IconButton(onPressed: ()async {
+
+    //logout logic
+    await Authentication().signOutUser();
+    PersistentNavBarNavigator.pushNewScreen(
+    context,
+    screen: const SplashScreen(),
+    withNavBar: false,
+    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    );
+    }, icon: Icon(Icons.logout_outlined,size: 25.h,))
+        ],
+      ),
       body: SafeArea(
         child: Center(
-          child: Text(
-            'Profile Screen',
-            style: textTheme.titleLarge?.copyWith(color: AppColors.secondary),
-          ),
+          child: Text('Profile')
         ),
       ),
     );
