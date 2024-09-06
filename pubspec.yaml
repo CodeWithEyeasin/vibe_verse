@@ -30,6 +30,8 @@ dependencies:
   permission_handler: ^11.3.1
   uuid: ^4.4.2
   cached_network_image: ^3.3.0
+  carousel_slider: ^5.0.0
+  dots_indicator: ^3.0.0
 
 dev_dependencies:
   flutter_test:

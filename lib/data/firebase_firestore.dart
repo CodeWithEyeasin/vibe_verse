@@ -43,26 +43,27 @@ class FirebaseFireStore {
     }
   }
   Future<bool> createPost({
-    required String postImage,
+    required List<String> postImages,
     required String caption,
     required String location,
-})async{
+  }) async {
     var uid = Uuid().v4();
-    DateTime data = new DateTime.now();
+    DateTime data = DateTime.now();
     Usermodel user = await getUser();
     await _fireStore.collection('posts').doc(uid).set({
-      'postImage':postImage,
-      'username':user.userName,
-      'profileImage':user.profile,
-      'caption':caption,
+      'postImages': postImages,
+      'username': user.userName,
+      'profileImage': user.profile,
+      'caption': caption,
       'location': location,
-      'uid':_auth.currentUser!.uid,
+      'uid': _auth.currentUser!.uid,
       'postId': uid,
-      'like':[],
-      'time':data
+      'like': [],
+      'time': data
     });
     return true;
   }
+
   // Future<List<String>> fetchAllImages() async {
   //   List<String> imageUrls = [];
   //   final ListResult result = await FirebaseStorage.instance.ref('posts').listAll();
@@ -73,6 +74,28 @@ class FirebaseFireStore {
   //   }
   //   return imageUrls;
   // }
+
+  // Stream<List<Map<String, dynamic>>> fetchImagesStream() async* {
+  //   while (true) {
+  //     List<Map<String, dynamic>> postDetails = [];
+  //
+  //     // Fetch posts data from Firestore
+  //     QuerySnapshot snapshot = await _fireStore.collection('posts').get();
+  //     for (var post in snapshot.docs) {
+  //       var data = post.data() as Map<String, dynamic>;
+  //       postDetails.add({
+  //         'postImages': data['postImages'],
+  //         'username': data['username'],
+  //         'profileImage': data['profileImage'],
+  //         'caption': data['caption'],
+  //       });
+  //     }
+  //
+  //     yield postDetails;
+  //     await Future.delayed(const Duration(seconds: 5)); // Poll every 5 seconds
+  //   }
+  // }
+
   Stream<List<String>> fetchImagesStream() async* {
     while (true) {
       List<String> imageUrls = [];

@@ -5,7 +5,6 @@ import '../utils/app_colors.dart';
 
 class ImageListView extends StatelessWidget {
   final List<String> imageUrls;
-
   const ImageListView({Key? key, required this.imageUrls}) : super(key: key);
 
   @override
@@ -17,9 +16,27 @@ class ImageListView extends StatelessWidget {
           margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
           child: Column(
             children: [
+              Row(
+                children: [
+                  const CircleAvatar(),
+                  const SizedBox(width: 10,),
+                  Column(children: [
+                    Text('Caption',style: TextStyle(
+                      color: Colors.grey.shade600
+                    ),),
+                    Text('Location',style: TextStyle(
+                        color: Colors.grey.shade500,
+                      fontSize: 15
+                    ),),
+                  ],),
+                  const Spacer(),
+                  IconButton(onPressed: (){}, icon: const Icon(Icons.more_horiz)),
+                ],
+              ),
+              const SizedBox(height: 10,),
 
               ClipRRect(
-                borderRadius: const BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0)),
+                // borderRadius: const BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0)),
                 child: Image.network(imageUrls[index]),
               ),
               Padding(
